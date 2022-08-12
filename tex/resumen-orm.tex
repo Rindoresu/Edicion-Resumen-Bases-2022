@@ -1,0 +1,15 @@
+\section*{Mapeo Objeto Relacional (ORM)}
+Estos se enfocan en combinar las ventajas de los \textbf{modelos relacionales} (consultas de alto nivel) con los \textbf{orientados a objetos} (tipos de datos complejos como mapas o multimedia). Soportan:
+\begin{itemize}
+    \item \textbf{Tipos de datos complejos:} Permiten atributos con dominio no atómico para tener un modelo más intuitivo para aplicaciones los manejen. Esto hace que violen \textbf{1FN} aunque mantienen los \textbf{fundamentos matemáticos} de la relación. Algunos de ellos son:
+    \begin{itemize}
+        \item \textbf{Colecciones o conjuntos:} Particularmente permiten definir \textbf{relaciones anidadas} a través de collect o subconsultas. Soportan \quotes{desanidación}.
+        \item \textbf{Estructuras:} Particularmente las definidas por el usuario.
+    \end{itemize}
+    \item \textbf{Funcionalidades orientadas a objetos:}
+    \begin{itemize}
+        \item \textbf{Herencia:} Permiten definir tipos en base a otros y los subtipos pueden redefinir métodos de su supertipo (o supertipos con cuidado de no generar conflictos) en su declaración.
+        \item \textbf{Referencias:} Apuntan a identificadores de otros objetos y permiten evitar consultas adicionales y juntas a través de expresiones (\textbf{path expressions}).
+    \end{itemize}
+\end{itemize}
+Hay extensiones de SQL que comprenden estas funcionalidades pero no están totalmente implementadas en sistemas actuales (algunas son de uso comercial).

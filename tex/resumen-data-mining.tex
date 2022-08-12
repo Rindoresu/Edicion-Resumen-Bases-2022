@@ -1,0 +1,132 @@
+\section*{Data Mining}
+
+Es la \textbf{extracción} de patrones o \textbf{información interesante}, es decir, no trivial, implícita, previamente desconocida y potencialmente útil, de grandes bases de datos (como data warehouses). Su resultado es \textbf{el KDD} (Knowledge Discovery in Databases o Descubrimiento de Conocimiento en Bases de Datos).
+
+\subsubsection*{Outliers}
+Es importante tener datos de Calidad para estos algoritmos, y el tratamiento de outliers es muy importante.
+Dentro del conjunto de datos analizado los outliers siguen un comportamiento diferente al resto en una o más variables. Si bien se los puede usar para \textbf{detectar anormalidades}, generalmente pueden ensuciar o influir en nuestros resultados y conviene descartarlos. Esta \textbf{variación} puede provenir de:
+\begin{itemize}
+    \item \textbf{La fuente:} Surge de las observaciones y se la considera un \textbf{comportamiento natural} en relación a cierta variable de estudio.
+    \item \textbf{El medio:} Surge del mal uso de la técnica para medir una variable o cuando no exista una valoración exacta de ella. Comprende los \textbf{redondeos forzosos} en variables continuas.
+    \item \textbf{El experimentador:} Se clasifican en:
+    \begin{itemize}
+        \item \textbf{Error de planificación:} Cuando no se delimita correctamente la población o se realizan observaciones de otra.
+        \item \textbf{Error de realización:} Se valora incorrectamente a los elementos (transcripciones erróneas, falsas lecturas con los instrumentos de medición, etc.).
+    \end{itemize}
+\end{itemize}
+De allí se dice que una \textbf{observación atípica} surge de primer tipo de variación, mientras que una \textbf{errónea} de los otros dos. Ambas pueden ser outliers y es conveniente estudiarlas antes de eliminarlas.
+
+Otro concepto importante es la estimación de la precisión del modelo. Para ello se debe construir un conjunto de datos de entrenamiento, y otro distinto e independiente de testing. La independencia evita potenciales overfittings.
+
+La precisión del modelo dependerá de los resultados en el conjunto de test, con el  cual  se  puede construir una matriz de confusión, dividiendo los resultados en correctos (la diagonal de la matriz), falsos positivos, y falsos negativos para problemas de decisión binaria.
+
+\subsubsection*{Funcionalidades del Data Mining}
+
+Entre sus funcionalidades tenemos:
+\begin{itemize}
+    \item \textbf{Descripción de conceptos:} Caracterizar y discriminar a los datos a través de sus características (generalizar, resumir, contrastar).
+    \item \textbf{Asociación:} Establecer una relación de correlación y causalidad.
+    \item \textbf{Clasificación y predicción:} Encontrar modelos o funciones que describan y distingan clases para futuras predicciones. Estos se pueden presentar de varias maneras (árboles de clasificación, reglas, redes neuronales) y nos permiten predecir valores faltantes.
+    \item \textbf{Cluster analisis:} Agrupar los datos en clases maximizando su similitud y minimizándola entre clases.
+    \item \textbf{Análisis de outliers:} Detectar y comprender aquellos datos que no respetan el comportamiento general.
+    \item \textbf{Análisis de tendencias y evolución:} Comprender la regresión, patrones secuenciales y similitudes a través del tiempo.
+\end{itemize}
+Para ello se tiene una serie de técnicas que pueden ser:
+\begin{itemize}
+    \item \textbf{Supervisadas:} Se basan en un conjunto de entrenamiento con sus respuestas anotadas (redes neuronales, árboles de decisión, regresión).
+    \item \textbf{No supervisadas:} Deben inferir una función para describir una estructura oculta a partir de datos no etiquetados (clustering, reglas de asociación).
+\end{itemize}
+
+\subsection*{Redes neuronales artificiales (RNA)}
+\textbf{Definición:} Son sistemas capaces de \textbf{aprender de sus propios errores} y adaptarse a condiciones variantes y ruido para predecir un estado futuro al asociar entradas a respuestas. Se usan para resolver problemas a \textbf{gran escala} (asociación, evaluación y reconocimiento de patrones) o \textbf{difíciles de calcular} (aproximadamente con respuestas rápidas y buenas). \\
+\textbf{Características:}
+\begin{itemize}
+    \item Aunque no se propagan siguiendo una secuencia predefinida de instrucciones, sólo resuelven \textbf{problemas resolvibles} por el cerebro humano.
+    \item Se procesan paralelamente a través de un gran número de elementos \textbf{altamente interconectados} entre sí.
+    \item Pueden mejorar su rendimiento al combinarse con otras herramientas (lógica difusa, algoritmos genéticos, sistemas expertos, estadísticas, transformada de Fourier, wavelets).
+    \item No son útiles para cálculos precisos, procesamiento serie ni reconocer algo que no siga algún tipo de \textbf{patrón}.
+    \item Se basan en modelos simplificados de neuronas reales (modelan el axón, las dendritas, la sinápsis y el cuerpo de la célula).
+\end{itemize}
+\textbf{Entrenamiento:} \\
+El entrenamiento de una RNA sigue una \textbf{regla delta generalizada} consistente en un proceso con todos los datos de entrenamiento que puede repetirse varias veces:
+\begin{enumerate}
+    \item Calcular la diferencia entre la salida resultante y la esperada.
+    \item Corregir los valores de las entradas para achicar las diferencias en base a una constante \textbf{delta} muy pequeña.
+\end{enumerate}
+De esa forma se busca que la diferencia se vaya minimizando \textbf{de a poco}, ya que de hacerlo de golpe se puede modificar demasiado lo aprendido anteriormente. \\
+\textbf{Tipos:} \\
+Entre los tipos de RNAs más utilizados tenemos:
+
+\begin{itemize}
+    \item Redes Neuronales Profundas es un termino paraguas para muchos tipos de Redes Neuronales pero que poseen muchas capas, dándole gran profundidad a muchas de ellas. Su principal problema es el gran costo computacional que implica entrenarlas debido a la gran cantidad de nodos que requieren entrenarse/optimizarse, y todas las conexiones que poseen.
+    \item Las Redes Neuronales de Convoluciones son más sencillas, basadas en la operación matemática de la convolución. Buscan percibir  detalles de más alto nivel, y generalmente se usan para detección de patrones en imágenes como por  ejemplo bordes.
+\end{itemize}
+
+Redes neuronales que no aparecen en las diapositivas de 2022:
+
+\begin{itemize}
+    \item Perceptrón multicapa
+    \item Red de Hopfield (mapas asociativos)
+    \item \textbf{Red de Konohen (SOM, mapas auto-organizativos):} Se basan en evidencias de cómo las neuronas del cerebro organizan su información, y en ellas la actualización delta sólo se realiza en la neurona cuyos pesos tengan la distancia mínimo con el valor a entrenar, afectando en menor medida a sus vecinas.
+\end{itemize}
+
+\subsection*{Árboles de decisión}
+\textbf{Definición:} Son modelos en forma de árbol que se utilizan para \textbf{clasificar} una entrada desconocida según sus \textbf{atributos}. Se componen de nodos internos con preguntas condicionales y entendibles sobre ellos, y hojas con su etiqueta o clase a predecir. \\
+\textbf{Construcción:} \\
+Para construirlo se parte de todos los ejemplos de la raíz del árbol y se los va dividiendo recursivamente a través de los atributos elegidos. Seguidamente, se podan las ramas con outliers o ruido (\textbf{prunning}). \\
+Considerando que el modelo se construye en base a clases existentes de entrenamiento, de este se obtienen las \textbf{reglas de clasificación}. De allí, para estimar su \textbf{precisión} se debe aplicarlo sobre un conjunto de prueba y comparar sus resultados con los reales, tomando el porcentaje correctamente clasificado. \\
+\textbf{Prunning:} \\
+En el prunning entra en juego el \textbf{overfitting} basado en adaptar el árbol demasiado al conjunto de entrenamiento y puede mediarse a través de:
+\begin{itemize}
+    \item \textbf{Preprunning:} Interrumpir la construcción de un nuevo nodo si la mejora está por debajo de cierto umbral (difícil de definir).
+    \item \textbf{Postprunning:} Quitar ramas de un árbol ya construido (usando otro conjunto de entrenamiento, por ejemplo).
+\end{itemize}
+
+\textbf{Ventajas:}
+
+\begin{itemize}
+    \item Son fáciles de entender por humanos porque manejan datos categóricos y numéricos.
+    \item Requieren menos preparación que otros modelos, y usan menos suposiciones.
+    \item Usan reglas de asociación vinculadas a modelos de razonamiento más complejos.
+\end{itemize}
+
+\subsection*{Regresión lineal}
+\textbf{Definición:} Es una técnica estadística que nos permite modelar e investigar la \textbf{relación entre dos o más variables} de un esquema. De allí, si se manejan sólo dos variables independientes es \textbf{simple} y si no, \textbf{múltiple}. \\
+\textbf{Requisitos para crear el modelo:}
+\begin{itemize}
+    \item La relación entre las variables debe ser lineal.
+    \item Los errores deben ser independientes entre sí.
+    \item La varianza de los errores deben ser constante y su esperanza matemática, nula.
+    \item El error total debe ser la suma de cada uno.
+\end{itemize}
+\textbf{Clasificación bayesiana:} \\
+La \textbf{regresión logística} se aplica cuando tenemos una variable dependiente dicotómica o politómica y no numérica. De allí, asociamos la variable con su \textbf{probabilidad de ocurrencia} e intentamos probar una hipótesis a través de la clasificación bayesiana. \\
+Esta nos permite aproximar las probabilidades de la hipótesis, verificar cómo sube o baja con cada ejemplo de entrenamiento y realizar múltiples predicciones. Su aplicación parte del \textbf{teorema de Bayes} de probabilidad condicional, sólo que en su versión \quotes{naive} que asume que los atributos son independientes para reducir el costo de cálculo. \\
+Entonces, las probabilidades \quotes{a-posteriori} se calculan en base a los atributos según si son categóricos o no continuos. Podemos superar la hipótesis de independencia usando redes bayesianas o árboles de decisión.
+
+\subsection*{Clustering}
+\textbf{Definición:} Técnica basada en agrupar objetos dentro de colecciones llamadas \textbf{clusters}, de manera de que en cada uno, sus objetos sean similares entre sí y diferentes de los que están por fuera de ellos. Se usan para tener una idea de la \textbf{distribución de los datos} como paso previo a la aplicación de otros algoritmos. \\
+\textbf{Calidad:}
+La calidad de un cluster viene dada por la \textbf{función de similitud} utilizada por el método (que depende del tipo de datos) y la manera en que está implementada. Entre las posibles funciones de distancia tenemos la euclídea, Manhattan, Minkowski (generalización de la anterior), etc., cada cual aplicable según el problema a resolver. \\
+El clustering puede tener \textbf{agrupamiento}:
+\begin{itemize}
+    \item \textbf{Jerárquico:} Puede hacerse a través de métodos aglomerativos o divisivos. No tiene número de clusters definido, no actúa bien cuando los datos tienen alto nivel de error y puede ser lento.
+    \item \textbf{No jerárquico:} Rápido y fiable pero requiere especificar el número de clusters y la semilla inicial (arbitrarios).
+\end{itemize}
+
+\subsection*{Reglas de asociación}
+\textbf{Definición:} Se basa en hallar automáticamente patrones comunes, asociaciones, correlaciones o estructuras de causalidad entre los ítems u objetos en bases de datos transaccionales, relacionales y otros repositorios de información. Para eso forma \textbf{reglas} del estilo \texttt{IF condición THEN resultado}. \\
+\textbf{Reglas:} \\
+Las reglas pueden ser:
+\begin{itemize}
+    \item \textbf{Úitles o aplicables:} Si contienen una buena cantidad de información y son traducibles a acciones de negocio.
+    \item \textbf{Triviales:} Si ya se conocen por su frecuente ocurrencia.
+    \item \textbf{Inexplicables:} Si se corresponden con curiosidades arbitrarias.
+\end{itemize}
+Su calidad se puede medir a través de su:
+\begin{itemize}
+    \item \textbf{Soporte:} Proporción de transacciones en la que se encuentra.
+    \item \textbf{Confianza:} Proporción de transacciones que la contienen respecto de la proporción que contienen a la cláusula condicional.
+    \item \textbf{Mejora:} Capcidad predictiva de la regla.
+\end{itemize}
+Pueden además ser booleanas o cuantitativas, tener una o varias dimensiones y manejar elementos simples o jerárquicos.

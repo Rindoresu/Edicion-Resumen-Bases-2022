@@ -1,0 +1,130 @@
+\section*{NoSQL}
+Este tipo de bases de datos \textbf{no relacionales} fueron diseñadas a partir de la existencia de datos no estructurados. Se caracterizan por ser \textbf{distribuidas}, de código abierto, y al no tener un esquema definido se basan en el concepto de \textbf{clave/valor}. Aquí almacenan los valores provistos para cada clave y los distribuyen a lo largo de la base. \\
+\textbf{Ventajas:}
+\begin{itemize}
+    \item Suelen tener una interfaz sencilla.
+    \item Pueden albergar grandes cantidades de datos con escalamiento horizontal (no tanto vertical).
+    \item Pueden recuperar su datos fácilmente gracias a su distribución.
+    \item Sus datos pueden ir evolucionando a través del tiempo y convivir con datos de diferentes estructuras.
+    \item Consultas que anteriormente eran complejas a través de juntas u otros operadores pueden responderse rápidamente.
+\end{itemize}
+\textbf{Desventajas:}
+\begin{itemize}
+    \item No permiten realizar consultas muy complejas.
+    \item Su variedad de opciones dificulta saber la más adecuada para cada caso.
+    \item Carecen de operaciones de juntas, agrupamiento y ordenamiento.
+    \item Su soporte es limitado.
+    \item No tienen un lenguaje de consultas definido.
+    \item Su administración de transacciones tiene poca garantía.
+\end{itemize}
+
+\subsection*{Herramientas y operaciones}
+\begin{itemize}
+    \item \textbf{MapReduce:} Es un marco de trabajo que permite \textbf{procesar paralelamente} grandes volúmenes de datos en varios equipos. Parte de la operación \textbf{Map} que toma los datos de la DB y los transforma en una colección de operaciones que se pueden ejecutar independientemente en diferentes procesadores. A la salida retorna pares \texttt{<clave, valor>} a los que \textbf{Reduce} les aplica la operación asignada y retorna su resultado.
+    \item \textbf{Sharding:} Se basa en \textbf{particionar} a los datos de la DB en fragmentos (shards) que se distribuyen a través de servidores. Estos comparten su esquema haciendo que su unión represente la totalidad del dataset. Nótese que esta fragmentación no es trivial y suele hacerse en base al hash de alguno de sus aributos. \\
+    \textbf{Ventajas:}
+    \begin{itemize}
+        \item Permite salvar la imposibilidad de guardar todos los datos en la misma máquina.
+        \item Escala horizontalmente.
+        \item Brinda tolerancia ante fallas, ya que sólo una porción de los datos quedaría fuera de servicio.
+    \end{itemize}
+    \textbf{Desventajas:} Ante frecuentes consultas que involucren más de un nodo, su rendimiento decrece.
+    \item \textbf{Replicación:} Es el almacenamiento de \textbf{múltiples copias} de la base de datos en diferentes nodos de la red. Puede combinarse con sharding para tener escalabilidad y disponbilidad. Se puede implementar en modo Master-Slave o P2P (Peer to Peer):
+    \begin{itemize}
+        \item \textbf{Master-Slave:} Este designa a un nodo como \textbf{master} y sobre él efectúa las operaciones de actualización (insert, delete, update), mientras que el resto (\textbf{slaves}) se usan mayormente para lecturas (cada tanto se actualizan). \\
+        \textbf{Ventajas:}
+        \begin{itemize}
+            \item Son ideales para escenarios de muchas lecturas.
+            \item En caso de fallar el nodo master, las lecturas pueden continuar en los slaves y se los puede configurar para que lo reemplacen.
+        \end{itemize}
+        \textbf{Desventajas:}
+        \begin{itemize}
+            \item El nodo master puede representar un cuello de botella para las escrituras.
+            \item Las lecturas pueden ser inconsistentes según la frecuencia en que se actualice cada réplica. Para ello puede implementarse un sistema en el que un valor se considere consistente al estar en la mayoría de los nodos, pero este requiere de una comunicación más rápida y confiable entre ellos.
+        \end{itemize}
+        \item \textbf{Peer to Peer (P2P):} Aquí todos los nodos (\textbf{peers}) poseen el mismo nivel de jerarquía y pueden manejar tanto lecturas como escrituras. \\
+        \textbf{Ventajas:}
+        \begin{itemize}
+            \item Evitan los cuellos de botella al tener un sistema descentralizado y tienen mayor tolerancia a las fallas.
+            \item El rendimiento es potencialmente mayor ya que todos los nodos son capaces de responder a las peticiones.
+        \end{itemize}
+        \textbf{Desventajas:} Las lecturas pueden ser inconsistentes y las escrituras, conflictivas. Tenemos dos posibles estrategias para tratar estos problemas:
+        \begin{itemize}
+            \item \textbf{Concurrencia pesimista:} Uso de locks que asegure la consistencia y prevenga conflictos a pesar de ir en contra de la disponibilidad.
+            \item \textbf{Concurrencia optimista:} No uso de locks, lo cual puede generar inconstencias basándose en la propagación de los valores hasta llegar a un estado consistente. Para asegurarse de que no sucedan suele  combinarse con un sistema de votación parecido a master-slave.
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+
+\hypertarget{oltp}{}
+\subsection*{OLTP} 
+Es un tipo de procesamiento de Datos. En la mayoría de los casos que vimos (\textbf{Relacionales}) y verémos a continuación de tipos de DBMS, se piensa en modelos de procesamiento de \textbf{On Line Transactional Processing} (no obstante, algunos DBMS \textbf{NoSQL}, están pensados para un uso \textbf{OLAP} o mixto \textbf{OLTP/OLAP}). Están pensadas para las bases de datos que deben soportar la ``operación'', el ``día a día''. Buscan poder resolver muchas transacciones que puedan seleccionar, insertar y modificar datos eficientemente (a grandes rasgos).
+
+\hypertarget{olap}{}
+\subsection*{OLAP}
+\textbf{On Line Analitical Processing} 
+es otro tipo de procesamiento de datos, dónde las Bases de Datos que cumplen con tener un tipo de procesamiento de datos \textbf{OLAP}, buscan hacer análisis estadístico, con datos sumarizados, de acceso poco frecuente, desnormalizados, por columna para cálculos estadísticos rápidos y eficientes. Ejemplos de esto son las Bases de Datos \textbf{Column Store} (notar que no son lo mismo que las \textbf{Column Family}).
+
+\subsection*{Tipos de bases NoSQL}
+Los tipos de bases NoSQL más comunmente usados son los basados en: key-value pair (pares clave-valor), document (documentos), column family (grupos de columnas) e graph (grafos).
+
+Se estima que las bases de datos Key-value son las que son capaces de almacenar los volúmenes mayores de datos, seguidas de las ColumnFamily, las de Documentos, las de grafos, y finalmente las SQL.
+
+No obstante la complejidad de los datos modelables por bases de datos de Grafos, es mayor a la de documentos, seguida de las de Column Family, y las Clave-valor tienen mucha dificultad para modelar relaciones complejas de los datos.
+
+\subsubsection*{Key-value pair databases}
+Es la más sencilla ya que guarda cada ítem como una \textbf{clave asociada a un valor} (como un diccionario). Las claves deben ser \textbf{únicas} dentro del dominio manejado para identificar al ítem unívocamente (para esto se pueden tener namespaces y/o buckets). \\
+Los datos guardados constituyen su información y no tienen un esquema definido, por lo que \textbf{no tienen restricciones} en cuanto a tamaño ni tipo: texto plano, XML, JSON, imagen, etc. Esto no salva que pueda haber datos redundantes y no implementan integridad referencial. \\
+\textbf{Ventajas:}
+\begin{itemize}
+    \item Su escalabilidad hace que se adecúen a la nube, servicios en la web y aplicaciones móviles, ya que no es necesario consultar todas sus entradas para obtener un valor.
+    \item Permiten almacenar objetos variados al asociarlos a claves. Esto las hace útiles para el código orientado a objetos.
+\end{itemize}
+\textbf{Desventajas:}
+\begin{itemize}
+    \item La integridad de los datos y sus restricciones deben ser manejadas por los programadores.
+    \item La falta de estructura limita el análisis posible que pueda efectuarse sobre los datos.
+    \item Su enfoque en la escalabilidad limita su funcionalidad y complejidad.
+\end{itemize}
+
+\subsubsection*{Document databases}
+Se asemejan a las anteriores pero guardan sus datos en base a \textbf{documentos} (strings o representaciones binarias de strings). Estos pueden diferir en su estructura (semi-estrcuturados, JSON, XML) y pueden contener listas de atributos e incluso \textbf{documentos embebidos}. Entre sus datos pueden contener metadata con índices para referirse a sus campos. \\
+Suelen manejarse a través de motores de DB como \textbf{MongoDB}. Este tiene escala horizontal gracias al sharding y replicas. Además en su API tiene incorporadas las funcionalidades de MapReduce para procesamiento batch y las de agregaciones. Permite además implementar búsquedas ad-hoc por campos y rangos particulares. Otros motores incluyen RavenDB, RethinkDB y CouchDB. \\
+\textbf{Ventajas:}
+\begin{itemize}
+    \item Los documentos pueden representar flexiblemente entidades, ya que no requieren la definición de sus atributos previamente.
+    \item Su información es accesible a través de lenguajes de consultas y APIs dedicados, a diferencia de key-value donde es necesario acceder a la clave previamente.
+    \item La incrustación de documentos evita implementar juntas en las consultas, mejorando el rendimiento. Esta pueden especificarse a través de su esquema lógico dado por su \textbf{diagrama de interrelación de documentos (DID)}.
+\end{itemize}
+\textbf{Desventajas:} La flexibilidad de la información que maneja puede acomplejizar la interpretación de los datos en un programa.
+
+\subsubsection*{Column family databases}
+Almacenan sus datos en \textbf{columnas} que asocian un nombre con un valor. Estas se agrupan en \textbf{filas} (row) y las que suelen accederse simultáneamente en las consultas se agrupan en \textbf{familias} (column families). No requieren predefinir un esquema para agregar columnas nuevas. Además, tienen mecanismos naturales de partición vertical y su almacenamiento es multi-dimensional (mapas o vectores asociativos). \\
+Superficialmente se asemejan a las \textbf{bases de datos relacionales}, pero con algunas diferencias:
+\begin{itemize}
+    \item No implementan juntas ya que su set de columnas no está predefinido.
+    \item Suelen estar denormalizadas de manera de poder guardar en una fila toda la información relacionada con una entidad particular.
+\end{itemize}
+\textbf{Ventajas:}
+\begin{itemize}
+    \item Permiten replicar y distribuir sus datos fácilmente en múltiples nodos de la red.
+    \item Tienen un modelo de fácil acceso a través de lenguajes de consulta parecidos a SQL.
+    \item Las column families favorecen el rendimiento de las consultas de agrupamiento (máximo, mínimo, promedio, etc.).
+    \item Su escalabilidad ser ve favorecida al permitir que no todas las columnas tengan valores asociados.
+    \item Pueden usar timestamps para almacenar diferentes versiones de un valor en el tiempo.
+\end{itemize}
+\textbf{Desventajas:} 
+\begin{itemize}
+    \item No son adecuadas para datos relacionales.
+    \item No proveen consistencia inmediata (son BASE).
+\end{itemize}
+
+\subsubsection*{Graph databases}
+Estas almacenan sus datos como \textbf{nodos} conectados a través de \textbf{relaciones dirigidas}. Ambas estructuras pueden contener información compleja. SQL Server y Oracle agregaron funcionalidad basada en ellas. \\
+\textbf{Ventajas:}\
+\begin{itemize}
+    \item Ejemplos como \textbf{NEO4J} cumplen con garantías \textbf{ACID}, a diferencia de muchas otras opciones NoSQL.
+    \item Permiten almacenar relaciones y manejarlas eficientemente al pensar a cada nodo como una entidad.
+    \item Se adecúan a los problemas enfocados en relaciones y basados en \textbf{grafos} (redes sociales, conexiones, recorridos, etc.) que en las bases relacionales tendrían el costo de muchas juntas y consultas.
+    \item En el caso de \textbf{NEO4J}, este incluye capacidades para sharding (fragmentación) y replicación. La replicación usa un sistema de nodos \textbf{``Core''} y nodos \textbf{``Read Replica''}. Una escritura es confirmada cuando todos los servidores Core la confirman. Por tanto da posibilidades de escalabilidad y alta disponibilidad.
+\end{itemize}

@@ -1,0 +1,117 @@
+\section*{Optimización}
+Una \textbf{query} (consulta) tiene muchas formas de ser ejecutada para obtener el set deseado. Cada una define un \textbf{plan} (query plan) y para elegir cuál ejecutar el DBMS cuenta con un módulo llamado \textbf{query optimizer}. \\
+Ahora, como encontrar el plan óptimo es un \textbf{problema NP-completo}, el módulo debe emplear otras técnicas para hallarlo en un tiempo razonable. Entre ellas tenemos:
+\begin{itemize}
+    \item \textbf{Uso de heurísticas:} Se aplican transformaciones del álgebra relacional con la propiedad de mantener los resultados obtenidos. Estas suelen mejorar la performance pero no siempre.
+    \item \textbf{Estimación de selectividad:} Se hace uso de la información en la base de datos para estimar el grado de selectividad de la consulta (cantidad de tuplas devueltas). Esto permite darnos una idea de su costo.
+    \item \textbf{Índices y tipo de archivo:} El plan elegido depende fuertemente de los índices dispuestos en las tablas y cómo se ordenan físicamente los datos en disco.
+\end{itemize}
+Una vez obtenido el plan, el code generator se encarga de generar su código correspondiente y el runtime database processor de ejecutarlo.
+
+\subsection*{Métricas de relaciones}
+Dada una relación $R$ tenemos una serie de parámetros del catálogo que podemos medir y usar para optimizar una consulta:
+\begin{itemize}
+    \item \textbf{Bloque:} Porción de datos levantada por cada lectura a disco.
+    \item \textbf{LB:} Longitud de los bloques.
+    \item \textbf{B$_R$:} Cantidad de bloques ocupados por $R$.
+    \item \textbf{FB$_R$:} Factor de bloqueo de $R$, es decir, la cantidad de tuplas de $R$ que entran en un bloque.
+    \item \textbf{L$_R$:} Longitud de una tupla de $R$.
+    \item \textbf{T$_R$}: Cantidad de tuplas de $R$.
+    \item \textbf{I$_{R,A}$}: Imagen del atributo $A$ de $R$, es decir, cantidad de valores distintos de la columna $A$ en $R$.
+    \item \textbf{X$_I$}: Altura del árbol de búsqueda (B+) con índice $I$.
+    \item \textbf{FB$_I$}: Factor de bloqueo de $I$, es decir, cantidad de tuplas del índice $I$ que entran en un bloque.
+    \item \textbf{BH$_I$}: Cantidad de bloques que ocupan todas las hojas del índice $I$.
+    \item \textbf{MBxB$_I$}: Cantidad máxima de bloques en un bucket del índice hash $I$.
+    \item \textbf{CBu$_I$:} Cantidad de buckets del índice hash $I$.
+    \item \textbf{B}: Cantidad de bloques que entran en memoria principal.
+\end{itemize}
+
+\subsubsection*{Almacenamiento físico}
+Las relaciones se almacenan en \textbf{archivos} y cada tupla tiene asociado un identificador llamado \textbf{rid} (register id), que no es un atributo de la relación. Estos archivos pueden ser:
+\begin{itemize}
+    \item \textbf{Heap files:} Son el tipo de archivo más simple consistente en una \textbf{colección desordenada} de registros agrupados en bloques. Aquí su \textbf{costo} de exploración completa (scan), búsqueda por igualdad ($A = c$) y búsqueda por rango ($c <= A <= d$) es $BR$ (lineal en la cantidad de bloques). Puede tener páginas para datos y otras para el \textbf{mapa de reserva de índices} (IAM, Index Allocation Table) que sirve para saber dónde están guardados los datos en disco.
+    \item \textbf{Sorted file:} Estos mantienen sus \textbf{registros ordenados} según el valor de determinados campos. Si bien su \textbf{costo} de exploración completa sigue siendo $BR$, el de búsqueda por igualdad y búsqueda por rango es $log_2(BR) + [T'/FB_R]$, donde $T'$ es la cantidad de tuplas que cumplen con el criterio de búsqueda (y $FB_R$ la cantidad de tuplas por bloque de $R$).
+\end{itemize}
+
+\subsection*{Índices}
+Son \textbf{diccionarios de claves} (no necesariamente únicas) asociados a la relación. Cada una se corresponde con una o más columnas (atributos) de ella y su valor asociado es el de sus registros (o tupla). Puede ser el registro completo, su rid a una lista con los rid de todos los registros asociados a ella. \\
+De estos se tienen tres tipos:
+\begin{itemize}
+    \item \textbf{Clustered:} Dicta el \textbf{orden físico} de los datos del archivo, que sólo puede tener uno definido. Se almacenan en forma de \textbf{árbol de búsqueda balanceado} de páginas (B+) de hasta 3 niveles donde sus hojas se corresponden a los datos y cada nodo intermedio referencia en sus filas la dirección física y el valor mínimo de la clave de la página (salvo en la primera que guarda \texttt{NULL} para insertar una fila con clave más baja en la tabla de forma óptima).
+    \item \textbf{Non-clustered}: No determinan el orden de los datos y se almacenan en una \textbf{estructura por fuera} de ellos. Se parecen a los anteriores en estructura con la salvedad de que en sus hojas almacenan el valor de la clave y un \textbf{rowid}, que según si se combinan con una heap table o clustered index, es su dirección física o la clave de su fila (respectivamente). En los nodos intermedios se guarda la dirección física de la página con el valor mínimo de clave. Puede guardarse el rowid en caso de haber más de un índice definido.
+    \item \textbf{Hash estático:} Se define como una \textbf{tabla de hash} con una cantidad estática de buckets. Es muy útil para realizar búsquedas por igualdad ya que su costo es $MBxB_I$ (cantidad máxima de bloques por bucket). No obstante, para el resto de las operaciones requieren de un barrido lineal (file scan).
+\end{itemize}
+Los índices pueden ser \textbf{densos} o no según si almacenan una entrada por cada registro en la base de datos o sólo algunos. Además son \textbf{primarios} si guardan registros completos de archivos (sólo uno por tabla) o \textbf{secundarios} si sus valores son rids (puede haber más de uno por tabla).
+
+\subsubsection*{Árbol de búsqueda B+}
+Es el \textbf{árbol balanceado} en el que se basan los primeros índices. Siempre tienen una página hoja y otra raíz a menos que la tabla entre toda en una sola. Se busca que \textbf{los datos no se solapen} entre páginas y de sobrar lugar se pueden agregar tablas de índices. \\
+Cada nodo interno (y la raíz) tiene una cantidad de hijos y claves dada por un parámetro $d$ (entre $d/2$ y $d$). Las hojas tienen información asociada a la clave de los registros del archivo y se pueden recorrer como $listas doblemente enlazadas$. Esto hace que la estructura sea recomendada para acceder a rangos de claves. \\
+Si bien para su exploración completa es necesario un \textbf{file scan}, para las búsquedas cada índice tiene cierta optimización:
+\begin{itemize}
+    \item \textbf{Clustered:} En la \textbf{búsqueda por igualdad} se recorre el árbol en busca de la primera ocurrencia de la clave. Con ella se busca su registro asociado en el archivo y partir de este punto se lo recorre mientras se hallen ocurrencias de la clave. Esto hace que su costo sea $X_I + [T'/FB_R]$. \\
+    Para la \textbf{búsqueda por rango} el costo es el mismo ya que se emplea el msimo método para hallar el primer elemento del rango y recorrer el archivo desde ahí.
+    \item \textbf{Non-clustered:} La \textbf{búsqueda por igualdad} es similar al caso clustered pero al llegar a las hojas del árbol se las recorre secuencialmente mientras haya ocurrencias de la clave. Luego, por cada una se leen sus registros asociados. Esto lleva su costo a $X_I - 1 + [T'/FB_I] + T'$. \\
+    En la \textbf{búsqueda por rango} el costo es el mismo ya que se sigue el mismo procedimiento para hallar el primer elemento del rango y a partir de este todas sus ocurrencias (leyendo sus registros asociados en el archivo).
+\end{itemize}
+
+\subsection*{Operadores del plan de ejecución}
+Las consultas se procesan por etapas:
+\begin{itemize}
+    \item \textbf{Parse:} Validación de la sintaxis de la sentencia SQL con su transformación inicial a árbol de ejecución.
+    \item \textbf{Bind:} Vínculo entre los objetos y la carga de metadata.
+    \item \textbf{Optimize:} Generación del plan de ejecución.
+    \item \textbf{Execute:} Ejecución del plan.
+\end{itemize}
+En un plan de ejecución, cada nodo es un operador que implementa al menos los métodos:
+\begin{itemize}
+    \item \textbf{Open():} Se inicializa el operador y se configuran las estructuras de datos requeridas.
+    \item \textbf{GetRow():} Se toma una fila del operador.
+    \item \textbf{Close():} Se finaliza el operador limpiando las estructuras y datos necesarios.
+\end{itemize}
+En base a ellos, tenemos dos operadores de acceso a datos:
+\begin{itemize}
+    \item \textbf{scan:} Barre una estructura. Se denota \textbf{file scan} si recorre todas las entradas de un archivo, o \textbf{index scan}, las de un índice.
+    \item \textbf{seek:} Recorre una estructura en base a un índice. Tenemos dos casos:
+    \begin{itemize}
+        \item Un índice de un \textbf{árbol B+} con un predicado como una conjunción de términos con atributos de un prefijo de su clave (su tupla).
+        \item Un índice \textbf{hash} con un predicado como una conjunción de términos con todos los atributos del índice.
+    \end{itemize}
+    En el caso de un índice non-clustered, al pasar de una hoja a otra estructura se efectúa un \textbf{bookmark lookup} (por rid o clave).
+\end{itemize}
+
+\subsubsection*{Juntas:}
+Tenemos 3 tipos de operadores de juntas entre relaciones:
+\begin{itemize}
+    \item \textbf{Nested Loops Join:} Son las más básicas de implementar ya que buscan los elementos recorriendo una tabla a partir de la otra. Son \textbf{efectivas} cuando el inner input es más grande que el outer input y el primero está indexado. Según si el índice forma parte del atributo del join se tiene el \textbf{Index Nested Loop Join} (INLJ) o el \textbf{Block Nested Loop Join} (BNLJ). El costo del primero depende del tipo de índice, siendo el segundo de fuerza bruta. Además el predicado puede no ser de igualdad.
+    \item \textbf{Merge Join:} Recorre ordenamente las tablas a través de un scan. Su \textbf{costo} se basa en el algoritmo de ordenamiento (de necesitarse a través de un operador) y el merge (lineal en el tamaño de ambas tablas por condición de igualdad).
+    \item \textbf{Hash Join:} Se usa para procesar entradas largas, no ordenadas y sin índices eficientes. Su predicado es de \textbf{igualdad}.
+\end{itemize}
+
+\subsubsection*{Otros operadores}
+\begin{itemize}
+    \item \textbf{Filtro:} Se usan para las condiciones impuestas por la cláusula \texttt{HAVING}, las cuales son eficientes para operar sobre la memoria.
+    \item \textbf{Agrupamiento (agregación):} Tenemos \textbf{stream} y \textbf{hash}, donde el primero se usa siempre que no se tenga la cláusula \texttt{GROUP BY} y en caso de hacerlo, los datos deben estar ordenados.
+    \item \textbf{Compute Scalar:} Realizan operaciones de conversión, cálculo de datos y otras de cómputo matemático.
+    \item \textbf{Union:} Permiten agrupar relaciones y se dividen en \textbf{merge}, \textbf{hash} y \textbf{concat}.
+\end{itemize}
+
+\subsection*{Optimizaciones y heurísticas}
+\begin{itemize}
+    \item \textbf{Algebráicas:} Estas buscan mejorar la performance de la consulta más allá de su representación física aprovechando las propiedades algebráicas del AR:
+    \begin{itemize}
+        \item Cascada de select/project por conjunción.
+        \item Conmutatividad de select/select con respecto a project/producto cartesiano (y la junta)/unión e intersección/select y project con respecto al producto cartesiano (y la junta).
+        \item Asociatividad del producto cartesiano, junta, unión e intersección.
+    \end{itemize}
+    \item La \textbf{materialización} es la escritura de un resultado en disco. Por otra parte, el \textbf{pipelining} se da entre dos operaciones $O_1$ y $O_2$ si las tuplas resultantes de la primera pasan a través de un \textbf{stream} en memoria a la segunda. Esto hace que se ahorre el costo de output de $O1$ y de input de $O_2$. No es aplicable a operaciones que necesitan todas las relaciones de antemano, como las juntas.
+    \item La \textbf{integridad referencial} permite evitar consultar a una tabla a través de juntas.
+    \item Considerar sólo \textbf{árboles sesgados a izquierda} permite limitar los árboles candidatos a analizar.
+    \item Al descomponer las \textbf{selecciones conjuntivas} podemos aprovechar los índices de cada relación por separado.
+    \item Tomar las selecciones lo más cercano posible a las hojas del árbol reduce la cantidad de datos a materializar al seleccionar prematuramente las tuplas que nos interesan.
+    \item Reemplazar \textbf{productos cartesianos} seguidos de selecciones por juntas.
+    \item Descomponer las listas de atributos de proyecciones y llevarlas lo más cerca posible de las hojas.
+    \item Los \textbf{hints} son instrucciones para el motor de búsqueda para cambiar su operación. Se especifican a través de la cláusula \texttt{OPTION} y sólo cambian su procesamiento, no su semántica (retornar rápidamente una serie de filas, buscar usando un índice en específico, recompilar una consulta, optimizar en base a un parámetro dado o \textit{parameter sniffing}, entre otras).
+    \item Para comparar y analizar las implementaciones de una consulta tenemos las \textbf{estadísticas}. Entre sus métricas, muestran la distribución de los datos en un histograma contando límites por paso, rango de valores, cantidad estimada promedio, valores distintivos y cantidad de duplicados promedio.
+    \item Para optimizar lecturas se pueden utilizar los atributos buscables a través de índices (\textbf{SARGable}: search-ARGument-table). Estos se aplican sólo cuando los predicados tienen condiciones de inclusión. En los índices compuestos depende del predicado de su primera columna.
+    \item La \textbf{cobertura de un índice} permite guardar partes selectivas en base a un criterio dado y con ello retornar la información necesaria o que se pueda llegar a usar en el futuro. También se puede filtrar el indexado para, por ejemplo, tomar todos los valores no nulos y así recorrer la tabla más rápidamente.
+\end{itemize}

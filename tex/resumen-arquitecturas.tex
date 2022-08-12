@@ -1,0 +1,41 @@
+\section*{Arquitectura de Datos}
+
+La arquitectura de datos es un conjunto de especificaciones que ayudan en la estandarización de como una organización recibe, almacena, transforma, distribuye y usa los datos. Esto ayuda en las "inversiones en datos".
+
+\subsection*{Características de una Buena Arquitectura de Datos}
+
+Una buena arquitectura de datos debe ser:
+
+\begin{itemize}
+    \item \textbf{Colaborativa:} todas las áreas deben colaborar.
+    \item \textbf{Administrada:} Buena gobernanza.
+    \item \textbf{Simple:} Disminuir variedad de herramientas usadas, duplicación de datos, y facilitar su modos de uso.
+    \item \textbf{Elástica:} Poder manejar demandas crecientes y cambiantes de su uso.
+    \item \textbf{Segura:} Buenas políticas de seguridad.
+    \item \textbf{Resiliente:} que tenga alta disponibilidad y capacidad de recuperación ante fallas.
+\end{itemize}
+\textbf{}
+
+\subsection*{Data as a Service (DaaS)}
+
+\textbf{Data as a Service (DaaS)} es una estrategia de administración de datos en la que una compañía renta su capacidad de almacenamiento, integración, procesamiento y servicios de analítica a otras compañías o terceros a través de un servicio en la nube.
+
+\subsection*{Integraciones de Bases de Datos}
+
+Las bases de datos pueden ser integradas unas a otras por razones como fusiones de compañías o federaciones. Herramientas para facilitar el proceso pueden  seguir estrategias:
+
+\textbf{ETL:} Extraction - Transform - Load
+
+\textbf{ELT:} Extraction - Load - Transform
+
+La fase que se haga  segunda tiene prioridad por sobre la tercera. 
+
+\textbf{ETL} transforma los datos en una staging area antes de cargarlo a la Data Warehouse donde se  almacenará para su análisis.
+
+\textbf{ELT} en cambio, lo carga y transforma en la misma Data Warehouse, haciéndose allí su futuro análisis, permitiendo usar el resultado y transformarlo nuevamente en el futuro sin requerir nuevas cargas, pero cualquier carga de datos nuevos va a requerir una nueva transformación.
+
+\subsection*{Federaciones y Fusiones como arquitectura de Datos}
+
+\textbf{Las Federaciones} construyen un esquema virtual global que sabe consultar con mapeos predefinidos a cada base de datos integrada a la Federación, y con ello responde las queries que se le indiquen. No obstante no guarda ningún dato. Es útil para consultas a Bases de Datos diversas que fueron desarrolladas de formas distintas y que necesitan cooperar para un mismo fin, como por ejemplo, una federación de aerolíneas que quiere publicar los vuelos de muchas aerolíneas (despegar.com), o una federación de hoteles que desea publicar la disponibilidad de distintos hoteles con distintas Bases de Datos (hoteles.com).
+
+En cambio \textbf{las fusiones o adquisiciones} de compañías tienden a definir mapeos que transforman los datos de la compañía adquirida generalmente a la estructura de la compañía que la adquirió, la cual además alojará copia de dicho datos transformados a la  estructura de la compañía que realizó la adquisición.

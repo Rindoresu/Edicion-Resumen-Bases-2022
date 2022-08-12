@@ -1,0 +1,85 @@
+\section*{Otras bases de datos}
+\subsection*{Stream databases}
+Son bases utilizadas para situaciones en que \textbf{los datos se cargan continuamente} (páginas web, sensores, trayectorias de paquetes). Se manejan a través de un \textbf{DSMS} que al recibir las consultas responde respecto de los datos que van ingresando y están disponibles por un período corto de tiempo. Aquí el \textbf{stream} es un conjunto de pares \texttt{<s, t>} donde $s$ es una tupla y $t$ un timestamp con su tiempo de llegada. \\
+Para contemplar la \textbf{validez} de los datos en las consultas se impone una restricción sobre la parte del stream a procesar. Esta es la \textbf{ventana} y se puede expresar diferente según la implementación del lenguaje:
+\begin{itemize}
+    \item \textbf{Landmark:} Mantiene fija la parte más antigua y la más nueva avanza conforme llegan tuplas al stream.
+    \item \textbf{Sliding:} Ambos extremos de la tupla van avanzando a medida que llegan tuplas nuevas.
+\end{itemize}
+
+\subsection*{Spatial databases}
+Se enfocan en los \textbf{Tipos de Datos Espaciales} \textbf{(SDT: Spatial Data Types)}, como puntos, líneas, polígonos, etc. Proporcionan indexación espacial y algoritmos eficientes de unión espacial y distancias entre cualquier tipo de par de \textbf{SDTs} usados. Comprenden a las \textbf{bases de datos geográficas}. Sus consultas suelen incluir:
+\begin{itemize}
+    \item Objetos de un cierto tipo en cierto rango.
+    \item Vecino más cercano de un cierto tipo de objeto.
+    \item Intersección o superposición entre 2 objetos.
+\end{itemize}
+\textbf{PostGIS} es un ejemplo de una extensión, que convierte a \textbf{PostgreSQL} en una Base de Datos Espacial. Por tanto responde queries \textbf{SQL}, es \textbf{ACID}, y resuelve los problemas antes mencionados.
+
+\subsection*{Cloud DataBases (CDBs)}
+
+Las Cloud Data Base Management Systems (CDBMSs) son DBMSs distribuidas que proveen todo el paquete incluyendo el poder de computo accesible como un servicio desde internet, es por esto y dado que no se almacenan in situ como otras DBMSs que los datos se  guardan  encriptados. Se paga por tiempo, espacio físico y poder de computo. Hay versiones relacionales y no relacionales.
+
+\textbf{Ventajas:}\
+\begin{itemize}
+    \item Muy fáciles de escalar, generalmente solo implica solicitar una mejora del servicio obtenido.
+    \item Reduce el costo de tener un DBMS, especialmente para pequeños y medianos usuarios. Para grandes usuarios a largo plazo dependerá de más factores.
+    \item La tolerancia a fallas tiende a ser de muy alta calidad y a veces personalizable.
+\end{itemize}
+
+\textbf{Desventajas:}\
+\begin{itemize}
+    \item La seguridad puede ser buena pero fuera de nuestro alcance garantizarla.
+    \item Hay dependencias legales en los datos que pueden impedirnos usar CDBMSs para ciertos datos.
+\end{itemize}
+
+\subsection*{Multi Tenant DataBases}
+
+Si bien no es un tipo de Base de Datos por si misma, es un concepto que puede definir algunas Bases de Datos, especialmente en los modelos de Bases de Datos como un Servicio (DBaaS).
+
+Puede tratarse de una Base de Datos por cliente, con algún recurso compartido (Database-per-tenant/Multi-Database). Una Base de Datos para varios o todos los clientes, pero separadas por schemas distintos para cada uno (Multi-Schema). O un único schema global que es usado por todos los clientes en la misma Base de Datos compartida (Shared-Schema).
+
+\subsection*{In-memory databases}
+Son bases de datos \textbf{cargadas completamente en memoria}. Existen de dos tipos:
+\begin{itemize}
+    \item \textbf{Sin persistencia:} Un corte en el suministro de energía hace que se pierda toda la base (ej: MemBase).
+    \item \textbf{Con persistencia} (ej: Redis, Sap Hanna).
+\end{itemize}
+Aquí todas la interacciones con la base se resuelven en memoria y se \textbf{escribe continuamente al log}, aprovechando que es secuencial para que las escrituras físicas sean rápidas. \\
+Pueden almacenarse por \textbf{filas} o por \textbf{columnas}. Las primeras son útiles para operaciones de selección mientras que las otras para proyección y ocupan menos espacio.
+
+\textbf{Volt DB} es un ejemplo de \textbf{IMDB} que cumple \textbf{ACID}, responde a queries escritas en \textbf{SQL}, y asegura durabilidad a través de command logging y replicas.
+
+\textbf{Redis} también es una \textbf{IMDB} con servicio de servidor (Master) y cliente (Slave). Es útil porque funciona también como Base de Datos de Streams y de datos Geoespaciales, y puede observar cambios de un valor por medio de un comando \texttt{WATCH}.
+
+\subsection*{Column Store databases}
+\textbf{No confundir} con las \textbf{Bases de Datos Column Family}. Las \textbf{Bases de Datos Column Store} pueden ser Bases de Datos Relacionales como las SQL convencionales, con la diferencia que guardan los contenidos de las tablas por columna y no por fila. Esto las hace mucho más adecuadas para procesamientos analíticos como los procesamientos \textbf{OLAP} (ya que operaciones analíticas como agregaciones que requieren pocas columnas son mucho más eficientes (proyecciones mucho más baratas), pero a costa de que los procesos \textbf{OLTP} sean más costosos (selecciones, y en particular modificaciones e inserciones en tablas son muchísimo más costosas).
+
+\textbf{Vertica Database} es un ejemplo de CSDB que cumple \textbf{ACID} y responde a queries escritas en \textbf{SQL}.
+
+\subsection*{Resorce Description Format (RDF) management systems}
+Comprende los datos \textbf{explícitamente declarados} y los \textbf{implícitos} generados a través de \textbf{restricciones semánticas} (reglas de entailment). Las consultas entonces se pueden resolver convirtiendo todos los datos en explícitos o reescribiendo la consulta de manera que contenga las expansiones (a través de reglas). Ejemplo:
+
+\begin{center}
+    \ttfamily
+    \begin{tabular}{c|c}
+        Explícito & Implícito \\
+        a) Sócrates es humano & Sócrates es mortal \\
+        b) Los humanos son mortales
+    \end{tabular}
+\end{center}
+
+\subsection*{Mobile databases (Opcional, no evaluado en 2022)}
+Son las enfocadas en el creciente uso de \textbf{dispositivos móviles}, ya que pueden instalarse en uno a través de una red móvil. Aquí el cliente y el servidor se conectan de forma \textbf{inalámbrica} y la memoria caché se usa para almacenar datos frecuentes y transacciones para que no se pierdan por un fallo de conexión. \\
+Sus aplicaciones se clasifican en:
+\begin{itemize}
+    \item \textbf{Verticales:} Los usuarios pueden acceden a los datos en una celda específica y fuera de ella la información no está disponible (sistema de plazas libres en un estacionamiento).
+    \item \textbf{Horiontales:} Los datos se distribuyen por todo el sistema y los usuarios pueden acceder a ellos desde cualquier celda (acceso al correo electrónico).
+\end{itemize}
+Los DBMS móviles deben además proveer la capacidad de:
+\begin{itemize}
+    \item Comunicarse con el servidor centralizado de la DB a través de comunicación inalámbrica o acceso a Internet.
+    \item Replicar y sincronizar los datos en el servidor centralizado y el dispositivo móvil.
+    \item Responder a una consulta de acuerdo con la \textbf{localización} del dispositivo móvil (ya sea, el lugar del que se efectuó la consulta, el lugar donde terminó o el indicado por ella). La movilidad de las estaciones de acceso puede dificultar la optimización por el coste de comunicación involucrado (más aún si los datos residen en una estación móvil). A esto se le suma la variabilidad del ancho de banda.
+\end{itemize}
+Si bien la tecnología móvil puede ser de gran provecho para negocios y empresas por optimizar la productividad, racionalizar las operaciones y crear nuevas fuentes de ingreso, los datos accesibles de manera remota pueden ser críticos a la corporación. Por ende, su \textbf{estrategia de seguridad} debe contemplar las maneras de gestionar y garantizar su seguridad en cualquier sitio y hora. Para ello se aplica la \textbf{autentificación de usuarios} cada vez que se quiera acceder a una nueva capa de confidencialidad y funcionalidad de los sistemas corporativos. De no estar autorizado, el acceso debe ser denegado.

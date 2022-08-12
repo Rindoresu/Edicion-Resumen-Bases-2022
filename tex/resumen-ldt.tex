@@ -1,0 +1,9 @@
+\section*{Long duration transacions}
+Son aquellas transacciones que caen dentro de dos escenarios:
+\begin{itemize}
+    \item Modifican una \textbf{cantidad muy grande de registros} de la base de datos. Si se ejecutasen como una sola transacción tardarían mucho tiempo en ejecutarse y requerirían almacenar mucha información para hacer rollback.
+    \item Deben \textbf{acceder a diferentes bases de datos} para ejecutarse.
+\end{itemize}
+Para tratarlas definimos una \textbf{saga} como una colección de acciones que juntas conforman a la transacción. Esta consiste además de un \textbf{grafo dirigido} donde cada nodo es una \textbf{acción}, se tienen los nodos terminales Abort y Complete (no salen ejes de ellos), y una marca del nodo inicial. \\
+Con esto, cada camino del grafo representa un \textbf{curso de acción} (secuencia de acciones) que puede llevar a $Abort$ ó $Complete$. Cada acción puede verse como una transacción y para cada una se define su \quotes{transacción de compensación} como aquella que al ejecutarse permite revertir la base al estado anterior a ejecutarse su transacción correspondiente (para la acción $A$ se define como $A^{-1}$). \\
+Entonces, si al ejecutar un curso se llega a $Abort$ se usan las transacciones de compensación de sus acciones en el orden inverso para deshacer sus cambios de la base de datos. Si en cambio se llega a $Complete$ los cambios se pueden mantener en la base.

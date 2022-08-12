@@ -1,0 +1,83 @@
+\section*{Seguridad en Bases de Datos}
+
+Las BDs sostienen muchos datos críticos del funcionamiento del negocio. Ventas, datos personales de clientes empleados y otros, e incluso propiedad intelectual.
+
+Objetos que  se  deben resguardar  son las tablas, vistas, stored procedures (funciones precompicaladas de lógica de negocio en formato  SQL) y triggers (queries de SQL que se causan por eventos predeterminados, útiles  para auditorías).
+
+\subsection*{Tipos de Amenazas a la Seguridad}
+
+\begin{itemize}
+    \item \textbf{Perdida de Integridad:} Los datos se editan inapropiadamente de  forma no autorizada con fines fraudulentos.
+    \item \textbf{Perdida  de Disponibilidad:} prohíbe el acceso legítimo a la BD.
+    \item \textbf{Perdida de Confidencialidad:} divulgación intencional o no, no autorizada de datos protegidos o confidenciales.
+\end{itemize}
+
+\subsection*{Ataques comunes}
+
+\begin{itemize}
+    \item Abuso de privilegios legítimos para uso no autorizado.
+    \item Autenticaciones débiles por robo de credenciales o políticas débiles de elección de contraseñas. (se debe asegurar políticas que impidan el uso de contraseñas default, caducar contraseñas cada cierto tiempo, evitar el uso de cuentas genéricas o compartidas, controlar el uso de guests o anónimos, y analizar logins fallidos, longitud de passwords y su reuso. Las versiones nuevas de SQL permiten este tipo de controles automáticos).
+    \item Ataques a través de configuraciones débiles de los sistemas con herramientas vulnerables o configuraciones no seguras.
+por defecto.
+    \item SQL Injections.
+    \item Cross site Scriptings.
+    \item Root Kits
+    \item Ataques a protocolos de comunicación débiles.
+    \item Abusos de vulnerabilidades en el Front-End. Son muy comunes vulnerabilidades donde las aplicaciones (por ejemplo las del Front-End) realizan todas las operaciones con un usuario propio, muchas veces hard-coded de forma que si la aplicación tiene una vulnerabilidad, un usuario puede tener acceso directo a la Base de Datos, pudiendo alterar sus tablas accederlas sin autorización, o incluso eliminarlas (por ejemplo con SQL Injections). Un  equipo de gestión de riesgo debe evaluar si su protección es adecuada.
+    \item Back Ups (último recurso) incompletos, fallados, inadecuados, poco usables o incluso ataques de robo de Back Ups. Es necesario tener Back Ups frecuentes y adecuados, además de buenas políticas de recovery (una no excluye a la otra).
+\end{itemize}
+
+\subsection*{Regla de Anderson (Anderson's Rule)}
+
+Una base de datos es menos segura mientras más accesible lo sea. El ideal que esto busca remarcar es conseguir una base de datos con seguridad perfecta (sin vulnerabilidades (suponiendo que esto fuese posible)), y una vez obtenida, maximizar la accesibilidad, manteniendo la seguridad.
+
+\subsection*{Mecanismos de protección}
+
+Es necesario evaluar riesgos en todos los componentes conectados a una Base de Datos, entre ellos:
+
+\begin{itemize}
+   \item Sistemas Operativos usados.
+   \item Privilegios otorgados en el sistema de archivos del Sistema Operativo, especialmente a los archivos de la Base de Datos, pero también al resto de archivos críticos del sistema.
+   \item Componentes de Red. 
+   \item Sistemas de Aplicación.
+   \item Seguridad Física misma, y todo elemento del sistema. (Hardware, cables, redes inalámbricas, etc)
+   \item Identificación y autenticación de usuarios y roles.
+   \item Sistemas de privilegios y control de acceso a objetos.
+   \item Mecanismos de trazas para auditorias, con documentaciones exhaustivas de dichas auditorías.
+   \item Encripción de datos.
+   \item Seguridad de las redes.
+\end{itemize}
+
+\subsection*{Reglas de privilegios}
+
+Los privilegios se otorgan con reglas que pueden ser:
+
+\textbf{Privilegios de Sistema:} permitiendo acceso a comandos u operaciones específicas de la BD.
+
+\textbf{Privilegios  de objetos:} permitiéndole acceder al usuario de una forma especifica al objeto.
+
+\subsection*{Controles de Acceso}
+
+Hay varios tipos de formas de definir políticas de acceso llamadas, Controles de Acceso:
+
+\textbf{Discretionary Access Control:} privilegios otorgados según el usuario y el objeto accedido. El ``dueño'' del objeto se responsabiliza de definirlo.
+
+\textbf{Role-based Access Control:} privilegios otorgados según roles, que un usuario puede tener o no, y un objeto puede  exigir.
+
+\textbf{Rule-based Access Control:} privilegios en función de un conjunto de reglas.
+
+\textbf{Mandatory Access Control:} privilegios concedidos según rangos jerárquicos de roles. Si un campo de una tabla exige un rango no poseído, el campo sensible puede retornarse nulo (indicando que es información clasificada), y para verlo requerirá poseer un rango de rol adecuado.
+
+\subsection*{Monitoreo de comportamiento sospechoso}
+
+Se puede hacer logging y monitoreo de todo el comportamiento de los usuarios (recordemos que esto va a tener un costo en espacio), o exclusivamente del comportamiento sospechoso, el cual se debe definir. Como por ejemplo:
+\begin{itemize}
+    \item Logins exitosos/fallidos.
+    \item Accesos exitosos/fallidos a la Base de Datos.
+    \item Horarios no habituales de uso de la Base de Datos.
+    \item Múltiples intentos de acceso de distintos usuarios, desde una misma terminal.
+\end{itemize}
+
+\subsection*{Auditorías y DBA}
+
+El DBA (Data Base Administrator) es responsable de hacer auditorías de la seguridad de toda la Base de Datos, sus protocolos, sus usuarios, sus mecanismos de seguridad, sus accesos, etc.

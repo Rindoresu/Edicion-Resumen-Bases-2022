@@ -1,0 +1,101 @@
+\section*{Data Warehousing (Opcional, tema no evaluado en 2022)}
+\subsection*{Business intelligence}
+Comprende el conjunto de \textbf{conceptos y metodologías} que buscan mejorar el proceso de \textbf{toma de decisiones en los negocios} al basarse en hechos y sistemas que trabajan con ellos. Sus datos provienen de fuentes como \textbf{warehouses} y comprenden una serie de \textbf{herramientas} para administrarlos, extraerlos, consultarlos y modelizarlos. \\
+La \textbf{evolución} de los datos de negocios a la información de negocios pasó por varias etapas:
+\begin{itemize}
+    \item \textbf{Data collection (1960):} Acceso retrospectivo y estático
+    \item \textbf{Data access (1980):} Acceso retrospectivo y dinámico
+    \item \textbf{Data navigation (1990):} Acceso retrospectivo y dinámico con niveles múltiples
+    \item \textbf{Data mining (2000):} Acceso prospectivo y proactivo
+\end{itemize}
+
+\subsection*{Data Warehouse (DW)}
+Surge como una colección de muchos datos que asisten a la \textbf{toma de decisiones de negocio}. Sus datos cumplen con ser:
+\begin{itemize}
+    \item \textbf{Subject-oriented:} Tratan sobre de un tema en particular en lugar de la operatoria de la compañía.
+    \item \textbf{Integrated:} Provienen de diferentes fuentes y son integrados consistentemente.
+    \item \textbf{Time-variant:} Se refieren a un momento en particular en el tiempo (\textbf{snapshot}).
+    \item \textbf{Non-volatile:} Son estables, es decir, suelen agregarse pero no quitarse para permitir una \textbf{análisis retrospectivo} de la marcha del negocio.
+\end{itemize}
+Puede decirse entonces que los datos están estructurados para responder a \textbf{transacciones y consultas complejas} (lectura y sumarización heurística). \\
+Dentro de los componentes del DW, además de los datos, están:
+\begin{itemize} 
+    \item Los procedimientos de extracción, transformación y carga (\textbf{ETL})
+    \item Soporte físico de los datos (\textbf{DBMS})
+    \item Herramientas de explotación (\textbf{OLAP}, reporting, \textbf{data mining}, etc.)
+\end{itemize}
+
+\subsection*{Metadata}
+Describe los datos a los usuarios de manera de que puedan interpretarlos. Esta descripción abarca, entre otras cosas:
+\begin{itemize}
+    \item Sus modelos lógicos
+    \item Su mapeo a sistemas transaccionales
+    \item Su esquema físico
+    \item Su información de carga
+\end{itemize}
+La metadata se encarga de describir no sólo a la fuente de datos sino a las operaciones de transformación, estructuras de datos, reglas de limpieza y referencias históricas y temporales. De allí podemos hacer la siguiente distinción:
+\begin{itemize}
+    \item \textbf{Datos:} Son los que se cargan a una base en crudo.
+    \item \textbf{Información:} Surge de los anteriores al incorporarles una definición, un formato, un intervalo de tiempo y relevancia (es decir, datos de contexto).
+    \item \textbf{Conocimiento:} Surge de la anterior a partir del análisis de patrones y tendencias, las relaciones y las asumciones tomadas. Para obtenerlo tenemos diversas técnicas como data mining.
+\end{itemize}
+
+\subsection*{Adquisición y limpieza}
+Como se tienen muchos datos en el DW pueden haber algunos corruptos, redundantes, irrelevantes o excesivos. Necesitamos que estos sean \textbf{correctos y completos} para satisfacer las necesidades del usuarios. Para ello podemos imponer una serie de \textbf{condiciones de integridad} para que los datos se ajusten a los estandartes de valor y completitud. El proceso encargado de tratar estos problemas es el \textbf{ETL}.
+
+\subsubsection*{ETL}
+Es el proceso que se usa para obtener los datos, limpiarlos y convertirlos a un formato con el que se puedan utilizar. Este comprende varias etapas:
+\begin{enumerate}
+    \item \textbf{Migración:} Se toman los datos de sistemas operacionales por fuera de las áreas de trabajo del DW a ellas, evitando traer datos innecesarios (\textbf{control preventivo de integridad}).
+    \item \textbf{Limpieza (data cleaning):} Se corrigen, estandarizan y completan los datos, identificando \textbf{redundantes}, atípicos (\textbf{outliers}) y perdidos (\textbf{missings}). Esto comprende la \textbf{normalización} de datos a una denominación uniforme para poder ser referenciados por el sistema de negocios. Además se deben \textbf{simplificar} los esquemas de codificación, particionando datos complejos.
+    \item \textbf{Transformación:} Comprende una serie de \textbf{procesos} para adpatar los datos al \textbf{modelo lógico} del DW. De allí se genera una serie de reglas de transformación que deben validarse con los usuarios. Entre ellos tenemos:
+    \begin{itemize}
+        \item \textbf{Snapshots:} Para tratar entidades con cambios frecuentes.
+        \item \textbf{Denormalización:} Para mejorar el rendimiento de las consultas y reflejar relaciones estáticas (que no cambian en un perspectiva histórica).
+        \item \textbf{Sumarización:} Para acelerar los tiempos de análisis y ocultar la complejidad de los datos. Pueden incluir múltiples juntas y vistas que deben ser mantenidas a medida que se cargan nuevos datos, para lo cual resulta necesario navegar los datos hasta su mínimo \textbf{nivel de granularidad}.
+    \end{itemize}
+    \item \textbf{Carga de los datos al DW físico:} Se puede hacer de dos maneras:
+    \begin{itemize}
+        \item \textbf{Full refresh:} Cargando todos los datos nuevamente.
+        \item \textbf{Incremental:} Cargando sólo los últimos datos.
+    \end{itemize}
+    \item \textbf{Conciliación y validación:} Comprende los controles de \textbf{detección de integridad} que verifican que los datos sean correctos y completos. Se puede hacer de manera:
+    \begin{itemize}
+        \item \textbf{Completa:} Al final de todo el proceso.
+        \item \textbf{Por etapas:} A medida que los datos son cargados.
+    \end{itemize}
+\end{enumerate}
+
+\subsection*{Modelado}
+El modelo de la DB que conforma un DW debe poder soportar eficientemente los requerimientos de los usuarios, ya que les da una \textbf{visualización del universo de negocio}, abstrae sus preguntas y determina cómo será implementado. De allí tenemos dos técnicas:
+\begin{itemize}
+    \item \textbf{Modelo Entidad-Relación:} Entidades, relaciones y atributos.
+    \item \textbf{Modelo Dimensional:} Se basa en 3 elementos:
+    \begin{itemize}
+        \item \textbf{Hecho:} Colección de ítems de datos que con su contexto representan a un ítem de negocio, una transacción o un evento. Estos se registran en las \textbf{tablas centrales}.
+        \item \textbf{Dimensión:} Colección de miembros, unidades o individuos del mismo tipo (relacionados). Estas determinan el contexto de los hechos y se usan como parámetros para el análisis \textbf{OLAP}. Suelen ser: tiempo, geografía, cliente y vendedor, y pueden agrupar sus ítems jerárquicamente.
+        \item \textbf{Medida:} Atributo numérico de un hecho que representa su rendimiento o comportamiento relativo a su dimensión (ventas en pesos, cantidad de productos, total de transacciones).
+    \end{itemize}
+    Puede verse este modelo como un caso particular del de E-R y se puede modelar de dos maneras:
+    \begin{itemize}
+        \item \textbf{Star:} Una tabla central de hechos y una serie de tablas individuales para cada dimensión.
+        \item \textbf{Snowflake:} Una tabla central de hechos pero con sus dimensiones organizadas jerárquicamente.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection*{OLAP}
+(no soy el autor original de esto, pero sinceramente no entendí de donde salió esta definición de OLAP, recomendaría ver la nueva definición que puse más arriba (después de Column Store Databases), pero como no lo entendí decidí no borrarlo por si le sirve a alguién)
+
+Es una \textbf{herramienta de explotación de datos} aplicable al modelo dimensional, específicamente al cubo de medidas en base a sus dimensiones. Sus operaciones se agrupan según:
+\begin{itemize}
+    \item \textbf{Nivel de Granularidad:} Se basan en el tamaño de la unidad mínima de tratamiento cuya medida resulta importante en el diseño. Aquí tenemos dos:
+    \begin{itemize}
+        \item \textbf{Roll Up:} Generalización de datos de una vista al reducir dimensiones o escalar en su jerarquía.
+        \item \textbf{Drill Down:} Especialización de datos al introducir una nueva dimensión en una vista o bajar en la jerarquía.
+    \end{itemize}
+    \item \textbf{Navegación por las dimensiones:} Toman un subconjunto de los datos según la cantidad de dimensiones. Aquí también tenemos dos:
+    \begin{itemize}
+        \item \textbf{Slice:} Toma una \quotes{rebanada} del cubo dimensional, es decir, los ítems con un mismo valor en alguna de las dimensiones.
+        \item \textbf{Dice:} Similar a la anterior pero comprende 2 o más dimensiones.
+    \end{itemize}
+\end{itemize}
