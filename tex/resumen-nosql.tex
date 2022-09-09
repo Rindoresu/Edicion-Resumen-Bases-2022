@@ -18,7 +18,7 @@ Este tipo de bases de datos \textbf{no relacionales} fueron diseñadas a partir 
     \item Su administración de transacciones tiene poca garantía.
 \end{itemize}
 
-\subsection*{Herramientas y operaciones}
+\subsection*{Herramientas y operaciones (todo esto ya no es evaluado en 2022, y fue reemplazado por lo que se ve ahora en Distribuidas (fragmentación y replicación) y en la descripción de NoSQL de Documentos, la cual describe el MapReduce de MongoDB de la forma que es evaluado en 2022).}
 \begin{itemize}
     \item \textbf{MapReduce:} Es un marco de trabajo que permite \textbf{procesar paralelamente} grandes volúmenes de datos en varios equipos. Parte de la operación \textbf{Map} que toma los datos de la DB y los transforma en una colección de operaciones que se pueden ejecutar independientemente en diferentes procesadores. A la salida retorna pares \texttt{<clave, valor>} a los que \textbf{Reduce} les aplica la operación asignada y retorna su resultado.
     \item \textbf{Sharding:} Se basa en \textbf{particionar} a los datos de la DB en fragmentos (shards) que se distribuyen a través de servidores. Estos comparten su esquema haciendo que su unión represente la totalidad del dataset. Nótese que esta fragmentación no es trivial y suele hacerse en base al hash de alguno de sus aributos. \\
@@ -89,7 +89,7 @@ Los datos guardados constituyen su información y no tienen un esquema definido,
 
 \subsubsection*{Document databases}
 Se asemejan a las anteriores pero guardan sus datos en base a \textbf{documentos} (strings o representaciones binarias de strings). Estos pueden diferir en su estructura (semi-estrcuturados, JSON, XML) y pueden contener listas de atributos e incluso \textbf{documentos embebidos}. Entre sus datos pueden contener metadata con índices para referirse a sus campos. \\
-Suelen manejarse a través de motores de DB como \textbf{MongoDB}. Este tiene escala horizontal gracias al sharding y replicas. Además en su API tiene incorporadas las funcionalidades de MapReduce para procesamiento batch y las de agregaciones. Permite además implementar búsquedas ad-hoc por campos y rangos particulares. Otros motores incluyen RavenDB, RethinkDB y CouchDB. \\
+Suelen manejarse a través de motores de DB como \textbf{MongoDB}. Este tiene escala horizontal gracias al sharding y replicas. Además en su API tiene incorporadas las funcionalidades de MapReduce para procesamiento batch (procesar y resumir grandes volúmenes de datos) y sabe operar con agregaciones como SQL. Permite además implementar búsquedas ad-hoc por campos y rangos particulares. Otros motores incluyen RavenDB, RethinkDB y CouchDB. \\
 \textbf{Ventajas:}
 \begin{itemize}
     \item Los documentos pueden representar flexiblemente entidades, ya que no requieren la definición de sus atributos previamente.

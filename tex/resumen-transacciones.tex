@@ -19,8 +19,8 @@ En los sistemas de control de concurrencia y recovery procuramos que se cumplan 
 \subsection*{Subsistema de manejo de transacciones}
 Este subsistema del DBMS se conforma de los siguientes módulos:
 \begin{itemize}
-    \item \textbf{Transaction manager (TM):} Encargado de preprocesar y ejecutar las transacciones en coordinación con el resto. Dentro de ellas, las operaciones tienen un orden fijo y pueden terminar en commit o abort.
-    \item \textbf{Scheduler (planificador):} Controla el orden de ejecución de las transacciones en base a una serie de reglas definidas según el paradigma.
+    \item \textbf{Transaction manager (TM):} Encargado de preprocesar y ejecutar las transacciones en coordinación con el resto, administra además sus recursos en un entorno concurrente.
+    \item \textbf{Scheduler (planificador):} Controla el orden de ejecución de las transacciones, decidiendo si son demoradas, abortadas por problemas de concurrencia, y otras decisiones sobre el orden de ejecución en un entorno concurrente.
     \item \textbf{Recovery manager (RM o log manager):} Encargado de asegurar la durabilidad y atomicidad de las transacciones. Realiza las siguientes operaciones:
     \begin{itemize}
         \item \textbf{RM-Read($T_i$,x):} lee x para la transacción $T_i$.

@@ -108,6 +108,23 @@ Alternativamente a la copia distinguida, se puede hacer un \textbf{pedido de loc
 \textbf{Ventajas:} Es un método de CC \textbf{realmente distribuido} por compartir la decisión entre sus nodos.
 \textbf{Desventajas:} Genera mucho tráfico de mensajes y de caerse nodos durante la votación el algoritmo puede acomplejizarse.
 
+\subsubsection*{Catálogo}
+Es una DB que contiene la \textbf{metadata} del DBMS, además de lo que ya vimos (meta data sobre las tablas, usuarios, vistas, y todo objeto de la Base de Datos), pero en el caso particular del DDBMS, también tiene la información de la \textbf{fragmentación, asignación de fragmentos y replicación de los datos}. Su administración debe tener autonomía de sitio, vistas y distribución y replicación de los datos. Su \textbf{esquema} puede ser:
+\begin{itemize}
+    \item \textbf{Centralizado:} Se almacena por completo en un sitio. \\
+    \textbf{Ventajas:} Su implementación es sencilla. \\
+    \textbf{Desventajas:}
+    \begin{itemize}
+        \item Tiene poca confiabilidad, disponbilidad y autonomía.
+        \item Centraliza la distribución de la carga de procesamiento.
+        \item Los locks pueden producir un cuello de botella en caso de haber muchas escrituras.
+    \end{itemize}
+    \item \textbf{Totalmente replicado:} Cada sitio tiene una copia completa del catálogo. \\
+    \textbf{Ventajas:} Puede responder a las consultas localmente. \\
+    \textbf{Desventajas:} Las actualizaciones deben ser transmitidas a todos los sitios, por lo que se requiere de un esquema centralizado 2PC para mantener la consistencia y las aplicaciones de muchas escrituras, incrementando así el tráfico de la red.
+    \item \textbf{Parcialmente replicado:} Cada sitio tiene la información completa del catálogo de los datos almacenados localmente en el sitio. Además pueden almacenar en caché copias de entradas de otros sitios (no necesariamente actualizadas). Luego, el sistema debe registrar para cada entrada del catálogo los sitios en que se creó el objeto y en donde están sus copias para propagar los cambios de ellas al original.
+\end{itemize}
+
 \subsection*{Recuperación en DDBs}
 Este subsistema debe atender a dos principales problemas:
 \begin{itemize}
@@ -191,20 +208,5 @@ De estas se derivan tipos particulares de arquitecturas:
     \includegraphics[scale=0.45]{fig/arquitectura-distribuida-federada.png}
 \end{figure}
 
-\subsection*{Catálogo}
-Es una DB que contiene la \textbf{metadata} del DDBMS, particularmente la información de la \textbf{fragmentación, asignación de fragmentos y replicación de los datos}. Su administración debe tener autonomía de sitio, vistas y distribución y replicación de los datos. Su \textbf{esquema} puede ser:
-\begin{itemize}
-    \item \textbf{Centralizado:} Se almacena por completo en un sitio. \\
-    \textbf{Ventajas:} Su implementación es sencilla. \\
-    \textbf{Desventajas:}
-    \begin{itemize}
-        \item Tiene poca confiabilidad, disponbilidad y autonomía.
-        \item Centraliza la distribución de la carga de procesamiento.
-        \item Los locks pueden producir un cuello de botella en caso de haber muchas escrituras.
-    \end{itemize}
-    \item \textbf{Totalmente replicado:} Cada sitio tiene una copia completa del catálogo. \\
-    \textbf{Ventajas:} Puede responder a las consultas localmente. \\
-    \textbf{Desventajas:} Las actualizaciones deben ser transmitidas a todos los sitios, por lo que se requiere de un esquema centralizado 2PC para mantener la consistencia y las aplicaciones de muchas escrituras, incrementando así el tráfico de la red.
-    \item \textbf{Parcialmente replicado:} Cada sitio tiene la información completa del catálogo de los datos almacenados localmente en el sitio. Además pueden almacenar en caché copias de entradas de otros sitios (no necesariamente actualizadas). Luego, el sistema debe registrar para cada entrada del catálogo los sitios en que se creó el objeto y en donde están sus copias para propagar los cambios de ellas al original.
-\end{itemize}
+
 
